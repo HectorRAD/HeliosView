@@ -6,169 +6,160 @@ import * as dat from "/js/jsm/libs/dat.gui.module.js";
 "use strict";
 
 let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui, 
-    sunMesh, earthMesh, mercuryMesh, venusMesh, marsMesh, jupiterMesh, saturnMesh, ringMesh, uranusMesh, neptuneMesh;
+    sunMesh, earthMesh, mercuryMesh, venusMesh, marsMesh, jupiterMesh, saturnMesh, ringMesh, uranusMesh, neptuneMesh, moonMesh,
+    firstTime, secondTime, timeScale;
 
-//PLANETS VARIABLE DECLARATION
-var orbits = new THREE.Object3D();
+   //PLANETS VARIABLE DECLARATION
+   var orbits = new THREE.Object3D();
 
-var scaleFactor = 0.1;
-
-var scaled = false;
-
-// Planet vars
-
-var sun;
-var mercury;
-var venus;
-var earth;
-var mars;
-var jupiter;
-var saturn;
-var saturnRings;
-var uranus;
-var neptune;
-
-
-
-// Planets data
-
-// Radius. In thousands of km 
-
-var 	 sunRadius 	  = scaleFactor*1392/100;
-var mercuryRadius	  = scaleFactor*2.49;
-var    venusRadius 	  = scaleFactor*6;
-var   earthRadius 	  = scaleFactor*6.3;
-var     moonRadius 	  = scaleFactor*1.7;
-var    marsRadius 	  = scaleFactor*3.38;
-var  jupiterRadius 	  = scaleFactor*69.9;
-var  saturnRadius	  = scaleFactor*58.2;
-var satRingsRadiusMax = scaleFactor*(58.2+120);
-var satRingsRadiusMin = scaleFactor*(58.2+6.63);
-var  uranusRadius 	  = scaleFactor*25.3;
-var uraRingsRadiusMax = scaleFactor*(25.3+98);
-var uraRingsRadiusMin = scaleFactor*(25.3+38);
-var  neptuneRadius 	 = scaleFactor*24.62;
-
-var 	 sunSize 	 = sunRadius;
-var mercurySize	 = mercuryRadius;
-var    venusSize 	 = venusRadius;
-var   earthSize 	 = earthRadius;
-var     moonSize 	 = moonRadius;
-var    marsSize 	 = marsRadius;
-var  jupiterSize 	 = jupiterRadius;
-var  saturnSize	 = saturnRadius;
-var satRingsSizeMax = satRingsRadiusMax;
-var satRingsSizeMin = satRingsRadiusMin;
-var    uranusSize 	 = uranusRadius;
-var uraRingsSizeMax = uraRingsRadiusMax;
-var uraRingsSizeMin = uraRingsRadiusMin;
-var  neptuneSize 	 = neptuneRadius;
-
-
-
-//Distance to the sun. In thousand of km.
-
-var mercuryMayorAxis =  scaleFactor*57.909;
-var    venusMayorAxis =  scaleFactor*108.208;
-var   earthMayorAxis =  scaleFactor*149.597;
-var     moonMayorAxis =  scaleFactor*10.384399;
-var    marsMayorAxis =  scaleFactor*227.936;
-var  jupiterMayorAxis =  scaleFactor*778.412;
-var  saturnMayorAxis =  scaleFactor*1426.725;
-var    uranusMayorAxis =  scaleFactor*2870.972;
-var  neptuneMayorAxis =  scaleFactor*4498.252;
-
-// Orbits obliquity. In rads.
-
-var mercuryObliquity =  1/360*2*Math.PI*7;
-var    venusObliquity =  1/360*2*Math.PI*3.39;
-var   earthObliquity =  1/360*2*Math.PI*0;
-var     moonObliquity =  1/360*2*Math.PI*5.14;
-var    marsObliquity =  1/360*2*Math.PI*1.85;
-var  jupiterObliquity =  1/360*2*Math.PI*1.305;
-var  saturnObliquity =  1/360*2*Math.PI*2.48;
-var    uranusObliquity =  1/360*2*Math.PI*0.769;
-var  neptuneObliquity =  1/360*2*Math.PI*1.769;
-
-
-
-// Orbits data: Major axis, minor axis and excentricity.
-
-var mercuryA = mercuryMayorAxis;
-var mercuryE =0.205;
-var mercuryB = mercuryA*Math.sqrt(1-mercuryE*mercuryE);
-var mercuryTheta = 0;
-
-var venusA = venusMayorAxis;
-var venusE = 0.0067;
-var venusB = venusA*Math.sqrt(1-venusE*venusE);
-var venusTheta = 0;
-
-var earthA = earthMayorAxis;
-var earthE = 0.0167;
-var earthB = earthA*Math.sqrt(1-earthE*earthE);
-var earthTheta = 0;
-
-
-var moonA =moonMayorAxis;
-var moonE = 0.0549;
-var moonB = moonA*Math.sqrt(1-moonE*moonE);
-var moonTheta = 0;
-
-var marsA = marsMayorAxis;
-var marsE = 0.093;
-var marsB = marsA*Math.sqrt(1-marsE*marsE);
-var marsTheta = 0;
-
-
-var jupiterA = jupiterMayorAxis;
-var jupiterE = 0.0483;
-var jupiterB = jupiterA*Math.sqrt(1-jupiterE*jupiterE);
-var jupiterTheta = 0;
-
-
-var saturnA =saturnMayorAxis;
-var saturnE = 0.0541;
-var saturnB = saturnA*Math.sqrt(1-saturnE*saturnE);
-var saturnTheta = 0;
-
-
-
-var uranusA = uranusMayorAxis;
-var uranusE = 0.0471;
-var uranusB = uranusA*Math.sqrt(1-uranusE*uranusE);
-var uranusTheta = 0;
-
-
-var neptuneA = neptuneMayorAxis;
-var neptuneE = 0.0085;
-var neptuneB = neptuneA*Math.sqrt(1-neptuneE*neptuneE);
-var neptuneTheta = 0;
-
-// Rotation periods (days)
-var mercuryRotPeriod = 58.64;
-var venusRotPeriod	= -243;
-var earthRotPeriod	= 0.99;
-var moonRotPeriod	= 0.3781;
-var marsRotPeriod	=1.025;
-var jupiterRotPeriod	=0.413;
-var saturnRotPeriod	=0.444;
-var uranusRotPeriod	=-0.718;
-var neptuneRotPeriod	=0.671;
-
-
-//Orbital periods (years)
-var mercuryOrbitalPeriod = 0.240  ;
-var    venusOrbitalPeriod = 0.615  ;
-var   earthOrbitalPeriod = 1      ;
-var     moonOrbitalPeriod = 0.074  ;
-var    marsOrbitalPeriod = 1.88   ;
-var  jupiterOrbitalPeriod = 11.86  ;
-var  saturnrbitalPeriod = 29.447 ;
-var    uranusOrbitalPeriod = 84.016 ;
-var  neptuneOrbitalPeriod = 64.7913;
+   var scaleFactor = 0.1;
+   
+   var scaled = false;
+   
+   
+   
+   // Planets data
+   
+   // Radius. In thousands of km 
+   
+   var 	 sunRadius 	  = scaleFactor*1392/100;
+   var mercuryRadius	  = scaleFactor*2.49;
+   var    venusRadius 	  = scaleFactor*6;
+   var   earthRadius 	  = scaleFactor*6.3;
+   var     moonRadius 	  = scaleFactor*1.7;
+   var    marsRadius 	  = scaleFactor*3.38;
+   var  jupiterRadius 	  = scaleFactor*69.9;
+   var  saturnRadius	  = scaleFactor*58.2;
+   var satRingsRadiusMax = scaleFactor*(58.2+120);
+   var satRingsRadiusMin = scaleFactor*(58.2+6.63);
+   var  uranusRadius 	  = scaleFactor*25.3;
+   var uraRingsRadiusMax = scaleFactor*(25.3+98);
+   var uraRingsRadiusMin = scaleFactor*(25.3+38);
+   var  neptuneRadius 	 = scaleFactor*24.62;
+   
+   var 	 sunSize 	 = sunRadius;
+   var mercurySize	 = mercuryRadius;
+   var    venusSize 	 = venusRadius;
+   var   earthSize 	 = earthRadius;
+   var     moonSize 	 = moonRadius;
+   var    marsSize 	 = marsRadius;
+   var  jupiterSize 	 = jupiterRadius;
+   var  saturnSize	 = saturnRadius;
+   var satRingsSizeMax = satRingsRadiusMax;
+   var satRingsSizeMin = satRingsRadiusMin;
+   var    uranusSize 	 = uranusRadius;
+   var uraRingsSizeMax = uraRingsRadiusMax;
+   var uraRingsSizeMin = uraRingsRadiusMin;
+   var  neptuneSize 	 = neptuneRadius;
+   
+   
+   
+   //Distance to the sun. In thousand of km.
+   
+   var mercuryMayorAxis =  scaleFactor*57.909;
+   var    venusMayorAxis =  scaleFactor*108.208;
+   var   earthMayorAxis =  scaleFactor*149.597;
+   var     moonMayorAxis =  scaleFactor*10.384399;
+   var    marsMayorAxis =  scaleFactor*227.936;
+   var  jupiterMayorAxis =  scaleFactor*778.412;
+   var  saturnMayorAxis =  scaleFactor*1426.725;
+   var    uranusMayorAxis =  scaleFactor*2870.972;
+   var  neptuneMayorAxis =  scaleFactor*4498.252;
+   
+   // Orbits obliquity. In rads.
+   
+   var mercuryObliquity =  1/360*2*Math.PI*7;
+   var    venusObliquity =  1/360*2*Math.PI*3.39;
+   var   earthObliquity =  1/360*2*Math.PI*0;
+   var     moonObliquity =  1/360*2*Math.PI*5.14;
+   var    marsObliquity =  1/360*2*Math.PI*1.85;
+   var  jupiterObliquity =  1/360*2*Math.PI*1.305;
+   var  saturnbliquity =  1/360*2*Math.PI*2.48;
+   var    uranusObliquity =  1/360*2*Math.PI*0.769;
+   var  neptuneObliquity =  1/360*2*Math.PI*1.769;
+   
+   
+   
+   // Orbits data: Major axis, minor axis and excentricity.
+   
+   var mercuryA = mercuryMayorAxis;
+   var mercuryE =0.205;
+   var mercuryB = mercuryA*Math.sqrt(1-mercuryE*mercuryE);
+   let mercuryTheta = 0;
+   
+   var venusA = venusMayorAxis;
+   var venusE = 0.0067;
+   var venusB = venusA*Math.sqrt(1-venusE*venusE);
+   var venusTheta = 0;
+   
+   var earthA = earthMayorAxis;
+   var earthE = 0.0167;
+   var earthB = earthA*Math.sqrt(1-earthE*earthE);
+   var earthTheta = 0;
+   
+   
+   var moonA =moonMayorAxis;
+   var moonE = 0.0549;
+   var moonB = moonA*Math.sqrt(1-moonE*moonE);
+   var moonTheta = 0;
+   
+   var marsA = marsMayorAxis;
+   var marsE = 0.093;
+   var marsB = marsA*Math.sqrt(1-marsE*marsE);
+   var marsTheta = 0;
+   
+   
+   var jupiterA = jupiterMayorAxis;
+   var jupiterE = 0.0483;
+   var jupiterB = jupiterA*Math.sqrt(1-jupiterE*jupiterE);
+   var jupiterTheta = 0;
+   
+   
+   var saturnA =saturnMayorAxis;
+   var saturnE = 0.0541;
+   var saturnB = saturnA*Math.sqrt(1-saturnE*saturnE);
+   var saturnTheta = 0;
+   
+   
+   
+   var uranusA = uranusMayorAxis;
+   var uranusE = 0.0471;
+   var uranusB = uranusA*Math.sqrt(1-uranusE*uranusE);
+   var uranusTheta = 0;
+   
+   
+   var neptuneA = neptuneMayorAxis;
+   var neptuneE = 0.0085;
+   var neptuneB = neptuneA*Math.sqrt(1-neptuneE*neptuneE);
+   var neptuneTheta = 0;
+   
+   // Rotation periods (days)
+   var mercuryRotPeriod = 58.64;
+   var venusRotPeriod	= -243;
+   var earthRotPeriod	= 0.99;
+   var moonRotPeriod	= 0.3781;
+   var marsRotPeriod	=1.025;
+   var jupiterRotPeriod	=0.413;
+   var saturnRotPeriod	=0.444;
+   var uranusRotPeriod	=-0.718;
+   var neptuneRotPeriod	=0.671;
+   
+   
+   //Orbital periods (years)
+   var mercuryOrbitalPeriod = 0.240  ;
+   var    venusOrbitalPeriod = 0.615  ;
+   var   earthOrbitalPeriod = 1      ;
+   var     moonOrbitalPeriod = 0.074  ;
+   var    marsOrbitalPeriod = 1.88   ;
+   var  jupiterOrbitalPeriod = 11.86  ;
+   var  saturnOrbitalPeriod = 29.447 ;
+   var    uranusOrbitalPeriod = 84.016 ;
+   var  neptuneOrbitalPeriod = 64.7913;
 
 function init(event) {
+
+ 
+
     // RENDERER ENGINE
     renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setClearColor(new THREE.Color(0, 0, 0));
@@ -267,7 +258,8 @@ function init(event) {
     var moon = new THREE.SphereGeometry(moonSize, 32,32 );
     var textureMoon = new THREE.TextureLoader().load("/img/moonmap1k.jpg");
     var moonMaterial = new THREE.MeshLambertMaterial({side: THREE.Frontside,ambient:0xFFFFFF, map: textureMoon});
-	var moonMesh = new THREE.Mesh(moon,moonMaterial);
+
+	moonMesh = new THREE.Mesh(moon,moonMaterial);
 	moonMesh.position.set(earthA + moonA, 0, 0);
 
     //Mars Model
@@ -395,10 +387,10 @@ function init(event) {
     let pointsSaturn = [];
     for(var theta = 0;  theta < 2*Math.PI;  theta+=Math.PI/365){
 		pointsSaturn.push(new THREE.Vector3(1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(saturnA*saturnA)+ Math.sin(theta)*Math.sin(theta)/(saturnB*saturnB))) * Math.cos(theta),
-			Math.sin(saturnObliquity+theta),
+			Math.sin(saturnbliquity+theta),
 			1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(saturnA*saturnA)+ Math.sin(theta)*Math.sin(theta)/(saturnB*saturnB))) * Math.sin(theta)));  
 	}
-    var saturnOrbit = new THREE.BufferGeometry().setFromPoints(pointsSaturn);
+    var saturnrbit = new THREE.BufferGeometry().setFromPoints(pointsSaturn);
 
     //Uranus orbit
 	var uranusmat = new THREE.LineBasicMaterial({color: 0x060F69,}); //Azul oscuro
@@ -427,7 +419,7 @@ function init(event) {
 	orbits.add(new THREE.Line(earthOrbit,  earthmat));
 	orbits.add(new THREE.Line(marsOrbit,   marsmat));
 	orbits.add(new THREE.Line(jupiterOrbit, jupitermat));
-	orbits.add(new THREE.Line(saturnOrbit, saturnmat));
+	orbits.add(new THREE.Line(saturnrbit, saturnmat));
 	orbits.add(new THREE.Line(uranusOrbit,   uranusmat));
 	orbits.add(new THREE.Line(neptuneOrbit, neptunemat));
 
@@ -492,12 +484,21 @@ function init(event) {
     document.body.appendChild(stats.dom);
 
     // DRAW SCENE IN A RENDER LOOP (ANIMATION)
+    firstTime = Date.now();
+    timeScale = 0.01;
+    var angle = 0;
+
+    
+
+
+
     renderLoop();
 }
 
 function renderLoop() {
     stats.begin();
     renderer.render(scene, camera); // DRAW SCENE
+    
     updateScene();
     stats.end();
     stats.update();
@@ -512,11 +513,75 @@ function updateScene() {
 }
 
 function rotatePlanets(){
+    mercuryMesh.rotation.y+=(2*Math.PI/mercuryRotPeriod*(secondTime-firstTime))* timeScale;
+	venusMesh.rotation.y   +=(2*Math.PI/venusRotPeriod*(secondTime-firstTime)	)* timeScale;
+    earthMesh.rotation.y  +=(2*Math.PI/earthRotPeriod*(secondTime-firstTime))* timeScale;
+	moonMesh.rotation.y    +=(2*Math.PI/moonRotPeriod*(secondTime-firstTime)	)* timeScale;
+	marsMesh.rotation.y   +=(2*Math.PI/marsRotPeriod*(secondTime-firstTime)	)* timeScale;
+	jupiterMesh.rotation.y +=(2*Math.PI/jupiterRotPeriod*(secondTime-firstTime))* timeScale;
+	saturnMesh.rotation.y +=(2*Math.PI/saturnRotPeriod*(secondTime-firstTime))* timeScale;
+	uranusMesh.rotation.y   +=(2*Math.PI/uranusRotPeriod*(secondTime-firstTime)	)* timeScale;
+	neptuneMesh.rotation.y +=(2*Math.PI/neptuneRotPeriod*(secondTime-firstTime))* timeScale;
+	
+	
+	
+	// Translation movements
+	mercuryTheta +=Math.PI*2/mercuryOrbitalPeriod /365*timeScale*(secondTime-firstTime);
+	venusTheta    +=Math.PI*2/   venusOrbitalPeriod /365*timeScale*(secondTime-firstTime);
+	earthTheta   +=Math.PI*2/  earthOrbitalPeriod /365*timeScale*(secondTime-firstTime);
+	moonTheta     +=  Math.PI*2/    moonOrbitalPeriod /365*timeScale*(secondTime-firstTime);
+	marsTheta    +=Math.PI*2/   marsOrbitalPeriod /365*timeScale*(secondTime-firstTime);
+	jupiterTheta  +=Math.PI*2/ jupiterOrbitalPeriod /365*timeScale*(secondTime-firstTime);
+	saturnTheta  +=Math.PI*2/ saturnOrbitalPeriod /365*timeScale*(secondTime-firstTime);
+	uranusTheta  +=Math.PI*2/   uranusOrbitalPeriod /365*timeScale*(secondTime-firstTime);
+	neptuneTheta    +=Math.PI*2/ neptuneOrbitalPeriod /365*timeScale*(secondTime-firstTime);
 
+    firstTime = secondTime;
 }
 
 function translatePlanets(){
+    mercuryMesh.position.x =1 /(Math.sqrt(Math.cos(mercuryTheta)*Math.cos(mercuryTheta)/(mercuryA*mercuryA)+ Math.sin(mercuryTheta)*Math.sin(mercuryTheta)/(mercuryB*mercuryB))) * Math.cos(mercuryTheta);
+	mercuryMesh.position.z =  1 /(Math.sqrt(Math.cos(mercuryTheta)*Math.cos(mercuryTheta)/(mercuryA*mercuryA)+ Math.sin(mercuryTheta)*Math.sin(mercuryTheta)/(mercuryB*mercuryB))) * Math.sin(mercuryTheta);
+    mercuryMesh.position.y  = Math.sin(mercuryObliquity+mercuryTheta);// Math.cos( vz )*c;
 
+    venusMesh.position.x =1 /(Math.sqrt(Math.cos(venusTheta)*Math.cos(venusTheta)/(venusA*venusA)+ Math.sin(venusTheta)*Math.sin(venusTheta)/(venusB*venusB))) * Math.cos(venusTheta);
+    venusMesh.position.z =  1 /(Math.sqrt(Math.cos(venusTheta)*Math.cos(venusTheta)/(venusA*venusA)+ Math.sin(venusTheta)*Math.sin(venusTheta)/(venusB*venusB))) * Math.sin(venusTheta);
+    venusMesh.position.y  =Math.sin(venusObliquity+venusTheta);// Math.cos( vz )*c;
+
+    earthMesh.position.x =1 /(Math.sqrt(Math.cos(earthTheta)*Math.cos(earthTheta)/(earthA*earthA)+ Math.sin(earthTheta)*Math.sin(earthTheta)/(earthB*earthB))) * Math.cos(earthTheta);
+    earthMesh.position.z =  1 /(Math.sqrt(Math.cos(earthTheta)*Math.cos(earthTheta)/(earthA*earthA)+ Math.sin(earthTheta)*Math.sin(earthTheta)/(earthB*earthB))) * Math.sin(earthTheta);
+    earthMesh.position.y  =Math.sin(earthObliquity+earthTheta);// Math.cos( vz )*c;
+
+    moonMesh.position.x =earthMesh.position.x + 1 /(Math.sqrt(Math.cos(moonTheta)*Math.cos(moonTheta)/(moonA*moonA)+ Math.sin(moonTheta)*Math.sin(moonTheta)/(moonB*moonB))) * Math.cos(moonTheta);
+    moonMesh.position.z =  earthMesh.position.z + 1 /(Math.sqrt(Math.cos(moonTheta)*Math.cos(moonTheta)/(moonA*moonA)+ Math.sin(moonTheta)*Math.sin(moonTheta)/(moonB*moonB))) * Math.sin(moonTheta);
+    moonMesh.position.y  = earthMesh.position.y + Math.sin(moonObliquity+moonTheta);// Math.cos( vz )*c;
+
+    marsMesh.position.x =1 /(Math.sqrt(Math.cos(marsTheta)*Math.cos(marsTheta)/(marsA*marsA)+ Math.sin(marsTheta)*Math.sin(marsTheta)/(marsB*marsB))) * Math.cos(marsTheta);
+    marsMesh.position.z =  1 /(Math.sqrt(Math.cos(marsTheta)*Math.cos(marsTheta)/(marsA*marsA)+ Math.sin(marsTheta)*Math.sin(marsTheta)/(marsB*marsB))) * Math.sin(marsTheta);
+    marsMesh.position.y  = Math.sin(marsObliquity+marsTheta);// Math.cos( vz )*c;
+
+    jupiterMesh.position.x =1 /(Math.sqrt(Math.cos(jupiterTheta)*Math.cos(jupiterTheta)/(jupiterA*jupiterA)+ Math.sin(jupiterTheta)*Math.sin(jupiterTheta)/(jupiterB*jupiterB))) * Math.cos(jupiterTheta);
+    jupiterMesh.position.z =  1 /(Math.sqrt(Math.cos(jupiterTheta)*Math.cos(jupiterTheta)/(jupiterA*jupiterA)+ Math.sin(jupiterTheta)*Math.sin(jupiterTheta)/(jupiterB*jupiterB))) * Math.sin(jupiterTheta);
+    jupiterMesh.position.y  = Math.sin(jupiterObliquity+jupiterTheta);// Math.cos( vz )*c;
+
+    saturnMesh.position.x =1 /(Math.sqrt(Math.cos(saturnTheta)*Math.cos(saturnTheta)/(saturnA*saturnA)+ Math.sin(saturnTheta)*Math.sin(saturnTheta)/(saturnB*saturnB))) * Math.cos(saturnTheta);
+    saturnMesh.position.z =  1 /(Math.sqrt(Math.cos(saturnTheta)*Math.cos(saturnTheta)/(saturnA*saturnA)+ Math.sin(saturnTheta)*Math.sin(saturnTheta)/(saturnB*saturnB))) * Math.sin(saturnTheta);
+    saturnMesh.position.y  = Math.sin(saturnbliquity+saturnTheta);// Math.cos( vz )*c;
+
+    ringMesh.position.x =saturnMesh.position.x;
+    ringMesh.position.y =saturnMesh.position.y;
+    ringMesh.position.z =saturnMesh.position.z;
+    
+    uranusMesh.position.x =1 /(Math.sqrt(Math.cos(uranusTheta)*Math.cos(uranusTheta)/(uranusA*uranusA)+ Math.sin(uranusTheta)*Math.sin(uranusTheta)/(uranusB*uranusB))) * Math.cos(uranusTheta);
+    uranusMesh.position.z =  1 /(Math.sqrt(Math.cos(uranusTheta)*Math.cos(uranusTheta)/(uranusA*uranusA)+ Math.sin(uranusTheta)*Math.sin(uranusTheta)/(uranusB*uranusB))) * Math.sin(uranusTheta);
+    uranusMesh.position.y  = Math.sin(uranusObliquity+uranusTheta);// Math.cos( vz )*c;
+
+
+    neptuneMesh.position.x =1 /(Math.sqrt(Math.cos(neptuneTheta)*Math.cos(neptuneTheta)/(neptuneA*neptuneA)+ Math.sin(neptuneTheta)*Math.sin(neptuneTheta)/(neptuneB*neptuneB))) * Math.cos(neptuneTheta);
+    neptuneMesh.position.z =  1 /(Math.sqrt(Math.cos(neptuneTheta)*Math.cos(neptuneTheta)/(neptuneA*neptuneA)+ Math.sin(neptuneTheta)*Math.sin(neptuneTheta)/(neptuneB*neptuneB))) * Math.sin(neptuneTheta);
+    neptuneMesh.position.y  = Math.sin(neptuneObliquity+neptuneTheta);// Math.cos( vz )*c;
+
+    secondTime = Date.now();
 }
 
 // EVENT LISTENERS & HANDLERS
