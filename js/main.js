@@ -7,18 +7,20 @@ import * as dat from "/js/jsm/libs/dat.gui.module.js";
 
 let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui, 
     sunMesh, earthMesh, mercuryMesh, venusMesh, marsMesh, jupiterMesh, saturnMesh, ringMesh, uranusMesh, neptuneMesh, moonMesh,
-    firstTime, secondTime, timeScale, params;
+    firstTime, secondTime, timeScale, params, oldScale, newScale;
 
    //PLANETS VARIABLE DECLARATION
    var orbits = new THREE.Object3D();
 
-   var scaleFactor = 0.1;
+   var scaleFactor = 1;
    
    var scaled = false;
    
    
    
    // Planets data
+
+   //PlanetsCore. Use in LookAt
    
    // Radius. In thousands of km 
    
@@ -33,8 +35,6 @@ let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui,
    var satRingsRadiusMax = scaleFactor*(58.2+120);
    var satRingsRadiusMin = scaleFactor*(58.2+6.63);
    var  uranusRadius 	  = scaleFactor*25.3;
-   var uraRingsRadiusMax = scaleFactor*(25.3+98);
-   var uraRingsRadiusMin = scaleFactor*(25.3+38);
    var  neptuneRadius 	 = scaleFactor*24.62;
    
    var 	 sunSize 	 = sunRadius;
@@ -48,8 +48,6 @@ let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui,
    var satRingsSizeMax = satRingsRadiusMax;
    var satRingsSizeMin = satRingsRadiusMin;
    var    uranusSize 	 = uranusRadius;
-   var uraRingsSizeMax = uraRingsRadiusMax;
-   var uraRingsSizeMin = uraRingsRadiusMin;
    var  neptuneSize 	 = neptuneRadius;
    
    
@@ -449,7 +447,7 @@ function init(event) {
 
     // DRAW SCENE IN A RENDER LOOP (ANIMATION)
     firstTime = Date.now();
-    timeScale = 0.01;
+    timeScale = 0.0001;
     var angle = 0;
 
     
@@ -461,26 +459,86 @@ function init(event) {
 
 function renderLoop() {
     stats.begin();
+
+
+
     renderer.render(scene, camera); // DRAW SCENE
-    updateCamera();
     updateScene();
+    updateCamera();
     stats.end();
     stats.update();
     requestAnimationFrame(renderLoop);
 }
 
 function updateScene() {
-
+    if (oldScale != newScale){
+        scalePlanets();
+        oldScale = newScale;
+    }
+    
     translatePlanets();
     rotatePlanets();
 
+}
+
+function scalePlanets(){
+    if(newScale){
+
+            mercurySize	 = 1/1000*mercuryRadius;
+            venusSize 		 = 1/1000*venusRadius;
+            earthSize 		 = 1/1000*earthRadius;
+            moonSize 		 = 1/1000*moonRadius;
+            marsSize 		 = 1/1000*marsRadius;
+            jupiterSize 	 = 1/1000*jupiterRadius;
+            saturnSize		 = 1/1000*saturnRadius;
+            satRingsSizeMax = 1/1000*satRingsRadiusMax;
+            satRingsSizeMin = 1/1000*satRingsRadiusMin;
+            uranusSize 		 = 1/1000*uranusRadius;
+            neptuneSize 	 = 1/1000*neptuneRadius;
+    
+            mercuryMesh.scale.set(1/1000,1/1000,1/1000);
+            venusMesh.scale.set(1/1000,1/1000,1/1000);
+            earthMesh.scale.set(1/1000,1/1000,1/1000);
+            moonMesh.scale.set(1/1000,1/1000,1/1000);
+            marsMesh.scale.set(1/1000,1/1000,1/1000);
+            jupiterMesh.scale.set(1/1000,1/1000,1/1000);
+            saturnMesh.scale.set(1/1000,1/1000,1/1000);
+            ringMesh.scale.set(1/1000,1/1000,1/1000);
+            uranusMesh.scale.set(1/1000,1/1000,1/1000);
+            neptuneMesh.scale.set(1/1000,1/1000,1/1000);
+    }
+    
+    else{ 	 
+            mercurySize	 = mercuryRadius;
+            venusSize 		 = venusRadius;
+            earthSize 		 = earthRadius;
+            moonSize 		 = moonRadius;
+            marsSize 		 = marsRadius;
+            jupiterSize 	 = jupiterRadius;
+            saturnSize		 = saturnRadius;
+            satRingsSizeMax = satRingsRadiusMax;
+            satRingsSizeMin = satRingsRadiusMin;
+            uranusSize 		 = uranusRadius;
+            neptuneSize 	 = neptuneRadius;
+    
+            mercuryMesh.scale.set(1,1,1);
+            venusMesh.scale.set(1,1,1);
+            earthMesh.scale.set(1,1,1);
+            moonMesh.scale.set(1,1,1);
+            marsMesh.scale.set(1,1,1);
+            jupiterMesh.scale.set(1,1,1);
+            saturnMesh.scale.set(1,1,1);
+            ringMesh.scale.set(1,1,1);
+            uranusMesh.scale.set(1,1,1);
+            neptuneMesh.scale.set(1,1,1);
+    }
 }
 
 function updateCamera(){
     switch (params.lookAt){
 
         case "Mercury" : 
-        //camera.position.set(mercuryMesh.position.x + 4*mercurySize,mercuryMesh.position.y+mercurySize,mercuryMesh.position.z+4*mercurySize);
+        camera.position.set(mercuryMesh.position.x, mercuryMesh.position.y + mercurySize/2, mercuryMesh.position.z + mercurySize * 3);
         camera.lookAt(mercuryMesh.position);
         if (cameraControls.enabled){
             cameraControls.enabled =false;
@@ -489,35 +547,30 @@ function updateCamera(){
 
 
         case "Venus" : 
-        //camera.position.set(venusMesh.position.x + 4*venusSize,venusMesh.position.y+venusSize,venusMesh.position.z+4*venusSize);
+        camera.position.set(venusMesh.position.x, venusMesh.position.y + venusSize/2, venusMesh.position.z + venusSize * 3);
         camera.lookAt(venusMesh.position);
         if (cameraControls.enabled){
             cameraControls.enabled =false;
         }
         break;
         case "Earth" : 
-        //camera.position.set(earthMesh.position.x + 4*earthSize,earthMesh.position.y+earthSize,earthMesh.position.z+4*earthSize);
+        
+        camera.position.set(earthMesh.position.x, earthMesh.position.y + earthSize/2, earthMesh.position.z + earthSize * 3);
         camera.lookAt(earthMesh.position);
         if (cameraControls.enabled){
             cameraControls.enabled =false;
         }
         break;
-        case "Moon" : 
-        //camera.position.set(moonMesh.position.x + 4*lunaSize,moonMesh.position.y+lunaSize,moonMeshMesh.position.z+4*lunaSize);
-        camera.lookAt(moonMesh.position);
-        if (cameraControls.enabled){
-            cameraControls.enabled =false;
-        }
-        break;
+
         case "Mars" : 
-        //camera.position.set(marsMesh.position.x + 4*marsSize,marsMesh.position.y+marsSize,marsMesh.position.z+4*marsSize);
+        camera.position.set(marsMesh.position.x, marsMesh.position.y + marsSize/2, marsMesh.position.z + marsSize * 3);
         camera.lookAt(marsMesh.position);
         if (cameraControls.enabled){
             cameraControls.enabled =false;
         }
         break;
         case "Jupiter" : 
-        //camera.position.set(jupiterMesh.position.x + 4*jupiterSize,jupiterMesh.position.y+jupiterSize,jupiterMesh.position.z+4*jupiterSize);
+        camera.position.set(jupiterMesh.position.x, jupiterMesh.position.y + jupiterSize/2, jupiterMesh.position.z + jupiterSize * 3);
         camera.lookAt(jupiterMesh.position);
         if (cameraControls.enabled){
             cameraControls.enabled =false;
@@ -525,7 +578,7 @@ function updateCamera(){
         break;
 
         case "Saturn" : 
-        //camera.position.set(saturnMesh.position.x + 4*saturnSize,saturnMesh.position.y+saturnSize,saturnMesh.position.z+4*saturnSize);
+        camera.position.set(saturnMesh.position.x, saturnMesh.position.y + saturnSize/2, saturnMesh.position.z + saturnSize * 3);
         camera.lookAt(saturnMesh.position);
         if (cameraControls.enabled){
             cameraControls.enabled =false;
@@ -533,7 +586,7 @@ function updateCamera(){
         break;
 
         case "Uranus" : 
-        //camera.position.set(uranusMesh.position.x + 20*uranusSize,uranusMesh.position.y+uranusSize,uranusMesh.position.z+20*uranusSize);
+        camera.position.set(uranusMesh.position.x, uranusMesh.position.y + uranusSize/2, uranusMesh.position.z + uranusSize * 3);
         camera.lookAt(uranusMesh.position);
         if (cameraControls.enabled){
             cameraControls.enabled =false;
@@ -541,7 +594,7 @@ function updateCamera(){
         break;
 
         case "Neptune" : 
-        //camera.position.set(neptuneMesh.position.x + 4*neptuneSize,neptuneMesh.position.y,neptune.positionMesh.z+4*neptuneSize);
+        camera.position.set(neptuneMesh.position.x, neptuneMesh.position.y + neptuneSize/2, neptuneMesh.position.z + neptuneSize * 3);
         camera.lookAt(neptuneMesh.position);
         if (cameraControls.enabled){
             cameraControls.enabled =false;
@@ -560,27 +613,22 @@ function setupGUI(){
     gui = new dat.GUI();
     
     params =  {
-        
-        general: function() {
-            camera.position.set(55,35,55);
-            camera.lookAt(0,0,0);
-        },
-        earth: function() {
-            
-        },
 
         lookAt: 'None',
+        scale: false,
          
      };
 
-    gui.add(params, "earth").name("EARTH VIEW").listen().onChange(function(value) {   
-      
+    gui.add(params, "scale").name("Scale Planets").listen().onChange(function(value) {   
+      newScale = !newScale;
     });
 
 
-    gui.add(params, "lookAt", ["None","Sun","Mercury", "Venus", "Earth", "Moon", "Mars", "Jupiter","Saturn","Uranus","Neptune"]).name("Focus on planet").onChange(function(value){
+    gui.add(params, "lookAt", ["None","Mercury", "Venus", "Earth", "Mars", "Jupiter","Saturn","Uranus","Neptune"]).name("Focus on planet").onChange(function(value){
     	
     });
+    oldScale=false;
+    newScale = false;
 
     gui.close();
 }
