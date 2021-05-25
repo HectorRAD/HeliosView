@@ -1,4 +1,4 @@
-import * as THREE from "/build/three.module.js";
+// import * as THREE from "/build/three.module.js";
 import Stats from "/js/jsm/libs/stats.module.js";
 import {OrbitControls} from "/js/jsm/controls/OrbitControls.js";
 import * as dat from "/js/jsm/libs/dat.gui.module.js";
@@ -15,9 +15,7 @@ let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui,
    var scaleFactor = 0.1;
    
    var scaled = false;
-   
-   
-   
+
    // Planets data
    
    // Radius. In thousands of km 
@@ -156,9 +154,14 @@ let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui,
    var    uranusOrbitalPeriod = 84.016 ;
    var  neptuneOrbitalPeriod = 64.7913;
 
-function init(event) {
+   // Planets info message data
 
- 
+   var show_planet_info = false;
+   var selected_planet =  null;
+   var selected_planet_info = null;
+   let planets_info = {};
+
+function init(event) {
 
     // RENDERER ENGINE
     renderer = new THREE.WebGLRenderer({antialias: true});
@@ -442,6 +445,73 @@ function init(event) {
     // GUI
     gui = new dat.GUI();
     
+    planets_info = {
+        Mercury: {
+            name: 'Mercury',
+            translation: '172.404 km/h',
+            rotacion: '10.83 km/h',
+            translation_time: '88 days',
+            model: mercuryMesh,
+            size : mercurySize
+        },
+        Venus: {
+            name: 'Venus',
+            translation: '126.108 km/h',
+            rotacion: '6.52 km/h',
+            translation_time: '225 days',
+            model: venusMesh,
+            size: venusSize
+        },
+        Earth: {
+            name: 'Earth',
+            translation: '107.244 km/h',
+            rotacion: '1674 km/h',
+            translation_time: '365 days',
+            model: earthMesh,
+            size: earthSize
+        },
+        Mars: {
+            name: 'Mars',
+            translation: '86.868 km/h',
+            rotacion: '866 km/h',
+            translation_time: '687 days',
+            model: marsMesh,
+            size: marsSize
+        },
+        Jupiter: {
+            name: 'Jupiter',
+            translation: '47.016 km/h',
+            rotacion: '45.583 km/h',
+            translation_time: '12 years',
+            model: jupiterMesh,
+            size: jupiterSize
+        },
+        Saturn: {
+            name: 'Saturn',
+            translation: '34.705 km/h',
+            rotacion: '36.840 km/h',
+            translation_time: '29 years',
+            model: saturnMesh,
+            size: saturnSize
+        },
+        Uranus: {
+            name: 'Uranus',
+            translation: '24.516 km/h',
+            rotacion: '14.794 km/h',
+            translation_time: '84 years',
+            model: uranusMesh,
+            size: uranusSize
+        },
+        Neptune: {
+            name: 'Neptune',
+            translation: '19.548 km/h',
+            rotacion: '9.719 km/h',
+            translation_time: '165 years',
+            model: neptuneMesh,
+            size: neptuneSize
+        }
+    }
+
     let params =  {
         
         general: function() {
@@ -452,6 +522,10 @@ function init(event) {
             camera.position.set(15, 20, 15);
             camera.lookAt(earthMesh.position.x, earthMesh.position.y, earthMesh.position.z);
         },
+        view: {
+            listPlanets: ["General", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"],
+            defaultItem: "General"
+        }
         /*frontal: function() {
             camera1.position.set(0, 0, 3);
             camera1.lookAt(0, 0, 0);
@@ -467,8 +541,20 @@ function init(event) {
 
     });
     gui.add(params, "earth").name("EARTH VIEW").listen().onChange(function(value) {   
-      
-    });/*
+
+    });
+    
+    gui.add(params.view, "defaultItem", params.view.listPlanets).name("View").onChange(function(item) {
+        clearInfo();
+        let view_selected = params.view.defaultItem;
+        if(view_selected === 'General'){
+            return;
+        }
+        createPlanetInfo(planets_info[view_selected]);
+    });
+
+    /*
+    
     gui.add(params, "lateral").name("LATERAL CAM").listen().onChange(function(value) {   
       
     });
@@ -506,10 +592,52 @@ function renderLoop() {
 }
 
 function updateScene() {
-
     translatePlanets();
     rotatePlanets();
+    showPlanetInfo();
+}
 
+function createPlanetInfo(planet){
+    let planet_info_sprite = new THREE.TextSprite({
+        text: getDisplayText(planet),
+        fontFamily: 'Arial, Helvetica, sans-serif',
+        fontSize: planet.size>2? 2: .4,
+        alignment: 'left',
+        color: '#ffbbff',
+    });
+    planet_info_sprite.position.x = planet.model.position.x;
+    planet_info_sprite.position.y = planet.size + planet.model.position.y + (planet.size<2? 2: 10);
+    selected_planet = planet;
+    selected_planet_info = planet_info_sprite;
+    scene.add(planet_info_sprite);
+    show_planet_info = true;
+}
+
+function getDisplayText(planet){
+    let txt = `\t${planet.name}\n
+    Translation velocity: ${planet.translation}\n
+    Rotation velocity: ${planet.rotacion}\n
+    Translation time: ${planet.translation_time}`;
+    return txt;
+}
+
+function showPlanetInfo(){
+    if(!show_planet_info || selected_planet === null || selected_planet_info === null){
+        return;
+    }
+    let model = selected_planet.model;
+    selected_planet_info.position.x = model.position.x;
+    selected_planet_info.position.y = selected_planet.size + model.position.y + (selected_planet.size<2? 2: 10);
+    selected_planet_info.position.z =  model.position.z;
+}
+
+function clearInfo(){
+    if(show_planet_info){
+        scene.remove(selected_planet_info);
+        selected_planet = null;
+        selected_planet_info = null;
+        show_planet_info = false;
+    }
 }
 
 function rotatePlanets(){
