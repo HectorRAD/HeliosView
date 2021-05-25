@@ -601,6 +601,7 @@ function createPlanetInfo(planet){
     let planet_info_sprite = new THREE.TextSprite({
         text: getDisplayText(planet),
         fontFamily: 'Arial, Helvetica, sans-serif',
+        backgroundColor: 'rgba(255, 255, 255, .2)',
         fontSize: planet.size>2? 2: .4,
         alignment: 'left',
         color: '#ffbbff',
