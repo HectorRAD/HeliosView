@@ -4,9 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Helios View</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
     <link rel="stylesheet" type="text/css" href="/css/style.css">
 </head>
 <body>
+    <script src="https://unpkg.com/three"></script>
+    <script src="https://unpkg.com/@seregpie/three.text-texture"></script>
+    <script src="https://unpkg.com/@seregpie/three.text-sprite"></script>
     <script type="module" src="/js/main.js"></script>
+    <div class='dialog-info' id="planet">Earth</div>
+    <div class='dialog-info' id="info">
+        <div class='info-row'>
+            <div class='info-row-placeholder'>
+                Size:
+            </div>
+            <div class='info-row-data' id='planet-size'>
+                12.742 kms
+            </div>
+        </div>
+        <div class='info-row'>
+            <div class='info-row-placeholder'>
+                Length of year:
+            </div>
+            <div class='info-row-data' id='traslation-time'>
+                365 days
+            </div>
+        </div>
+        <div class='info-row'>
+            <div class='info-row-placeholder'>
+                Length of day:
+            </div>
+            <div class='info-row-data' id='rotation-time'>
+                24 hours
+            </div>
+        </div>
+        <div class='info-row'>
+            <div class='info-row-placeholder'>
+                Temperature:
+            </div>
+            <div class='info-row-data' id='planet-temp'>
+                Between -88 C to 58 C
+            </div>
+        </div>
+        <div class='info-row'>
+            <div class='info-row-placeholder'>
+                Distance from sun:
+            </div>
+            <div class='info-row-data' id='planet-distance'>
+                151.75 million km
+            </div>
+        </div>
+    </div>
 </body>
 </html>
