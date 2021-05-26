@@ -7,7 +7,8 @@ import * as dat from "/js/jsm/libs/dat.gui.module.js";
 
 let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui, 
     sunMesh, earthMesh, mercuryMesh, venusMesh, marsMesh, jupiterMesh, saturnMesh, ringMesh, uranusMesh, neptuneMesh, moonMesh,
-    firstTime, secondTime, timeScale, params, oldScale, newScale;
+    firstTime, secondTime, timeScale, params, oldScale, newScale,
+    text2, day, year;
 
    //PLANETS VARIABLE DECLARATION
    var orbits = new THREE.Object3D();
@@ -16,6 +17,9 @@ let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui,
    
    var scaled = false;
    
+   day=0;
+   year=0;
+
    
    
    // Planets data
@@ -190,6 +194,18 @@ function init(event) {
     // MODEL
     // skybox (CUBE)
     let skybox = new THREE.BoxGeometry();
+
+    //Days and Years
+    text2 = document.createElement('div');
+	text2.style.position = 'absolute';
+	text2.style.width = 180;
+	text2.style.height = 40;
+	text2.style.color="#00E5E5";
+	
+	
+	text2.style.top = 1 + 'px';
+	text2.style.left = 100 + 'px';
+	document.body.appendChild(text2);  
 
     
 
@@ -468,18 +484,25 @@ function renderLoop() {
     updateScene();
     updateCamera();
     stats.end();
+    text2.innerHTML = 'Days: '+parseFloat(day).toFixed(1)+'<br> Years: ' + parseFloat(year).toFixed(2);
     stats.update();
     requestAnimationFrame(renderLoop);
 }
 
 function updateScene() {
-    if (oldScale != newScale){
-        scalePlanets();
-        oldScale = newScale;
+    if (params.planetFormation){
+
+    }else{ 
+        timeScale = params.simulationSpeed/1000;
+        if (oldScale != newScale){
+            scalePlanets();
+            oldScale = newScale;
+        }
+        
+        translatePlanets();
+        rotatePlanets();
     }
     
-    translatePlanets();
-    rotatePlanets();
 
 }
 
@@ -622,8 +645,20 @@ function setupGUI(){
 
         lookAt: 'None',
         scale: false,
+        planetFormation: false,
+        simulationSpeed: 1,
          
      };
+
+     gui.add(params, "simulationSpeed", 0, 100, 1).name("Simulation Speed").listen().onChange(function(value) {   
+        
+    });
+
+    /*gui.add(params, "planetFormation").name("Align Planets").listen().onChange(function(value) {   
+        
+    });
+    */
+    
 
     gui.add(params, "scale").name("Scale Planets").listen().onChange(function(value) {   
       newScale = !newScale;
@@ -639,7 +674,13 @@ function setupGUI(){
     gui.close();
 }
 
+function planetFormation(){
+    params.scale = true;
+}
+
 function rotatePlanets(){
+    day+=(secondTime-firstTime)*timeScale;
+    year=day/365;
     mercuryMesh.rotation.y+=(2*Math.PI/mercuryRotPeriod*(secondTime-firstTime))* timeScale;
 	venusMesh.rotation.y   +=(2*Math.PI/venusRotPeriod*(secondTime-firstTime)	)* timeScale;
     earthMesh.rotation.y  +=(2*Math.PI/earthRotPeriod*(secondTime-firstTime))* timeScale;
