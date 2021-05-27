@@ -5,4 +5,48 @@ html, body
 	padding: 0;
 	margin: 0;
 	overflow: hidden;
+	font-family: "Roboto", sans-serif;
+}
+
+#planet{
+	position: absolute;
+	top: 15rem;
+	width: 20%;
+	height: 15%;
+	z-index: 100;
+	font-size: 40px;
+	background-color: darkgrey;
+	border-radius: 0px 100px 100px 0px;
+	box-shadow: 0 0 30px #ddd;
+	color: whitesmoke;
+	align-items: center;
+	justify-content: center;
+}
+
+#info{
+	position: absolute;
+	bottom: 0;
+	width: 40%;
+	height: 33%;
+	z-index: 100;
+	background-color: rgba(255,255,255,0.6)	;
+	border-radius: 0px 1000px 0px 0px;
+	box-shadow: 0 0 30px #ddd;
+	font-size: 20px;
+	flex-direction: column;
+	padding-top: 2rem;
+    padding-left: 2rem;
+}
+
+.dialog-info{
+	display: none; 
+}
+
+.info-row{
+	height: 20%;
+	display: flex;
+}
+.info-row-data{
+	padding-left: 1rem;
+	color: white;
 }

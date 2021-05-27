@@ -1,4 +1,4 @@
-// import * as THREE from "/build/three.module.js";
+import * as THREE from "/build/three.module.js";
 import Stats from "/js/jsm/libs/stats.module.js";
 import {OrbitControls} from "/js/jsm/controls/OrbitControls.js";
 import * as dat from "/js/jsm/libs/dat.gui.module.js";
@@ -8,7 +8,7 @@ import * as dat from "/js/jsm/libs/dat.gui.module.js";
 let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui, 
     sunMesh, earthMesh, mercuryMesh, venusMesh, marsMesh, jupiterMesh, saturnMesh, ringMesh, uranusMesh, neptuneMesh, moonMesh,
     firstTime, secondTime, timeScale, params, oldScale, newScale,
-    text2, day, year,sprite;;
+    text2, day, year;
 
    //PLANETS VARIABLE DECLARATION
    var orbits = new THREE.Object3D();
@@ -76,7 +76,7 @@ let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui,
    var     moonObliquity =  1/360*2*Math.PI*5.14;
    var    marsObliquity =  1/360*2*Math.PI*1.85;
    var  jupiterObliquity =  1/360*2*Math.PI*1.305;
-   var  saturnObliquity =  1/360*2*Math.PI*2.48;
+   var  saturnbliquity =  1/360*2*Math.PI*2.48;
    var    uranusObliquity =  1/360*2*Math.PI*0.769;
    var  neptuneObliquity =  1/360*2*Math.PI*1.769;
    
@@ -158,19 +158,6 @@ let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui,
    var    uranusOrbitalPeriod = 84.016 ;
    var  neptuneOrbitalPeriod = 64.7913;
 
-<<<<<<< HEAD
-   //Second orbit
-   var mercurySecondOrbit;
-=======
-    // Planets info message data
-
-    var show_planet_info = false;
-    var selected_planet =  null;
-    var selected_planet_info = null;
-    let planets_info = {};
-    var planet_focused = false;
->>>>>>> 3222ab2030c2c7bc31946576191da1922296e7fa
-
 function init(event) {
 
  
@@ -190,12 +177,9 @@ function init(event) {
 	var ambientLight = new THREE.AmbientLight( 0x404040);
 	scene.add(ambientLight)
 
-	var pointLight = new THREE.PointLight(0xFFFFFF,3);
+	var pointLight = new THREE.PointLight(0xFFFFFF,2);
 	pointLight.position.set(0,0,0);
 	scene.add(pointLight);
-
-    renderer.shadowMapEnabled = true;
-	renderer.shadowMapSoft = true;
 
     // CAMERA
     let fovy = 60.0;    // Field ov view
@@ -254,24 +238,10 @@ function init(event) {
     //Sun Model
     let sun = new THREE.SphereGeometry(sunSize,32,32);
     let textureSun = new THREE.TextureLoader().load("/img/sun.jpg");
-    textureSun.repeat.set(1,1);
-	textureSun.magFilter = THREE.LinearFilter; 
-	textureSun.minFilter = THREE.LinearFilter; 
-    let sunMaterial = new THREE.MeshPhongMaterial({ ambient:0xFFF300, side: THREE.Frontside,map: textureSun, emissive: 0Xdc7922});
+    let sunMaterial = new THREE.MeshPhongMaterial({ ambient:0xFFF300, side: THREE.Frontside,map: textureSun});
 
     sunMesh = new THREE.Mesh(sun, sunMaterial);
     sunMesh.position.set(0,0,0);
-
-    var spriteMaterial = new THREE.SpriteMaterial( 
-        { 
-            map: new THREE.TextureLoader().load( "/img/lensflare.png" ), 
-            useScreenCoordinates: true,
-            color: 0xFFF300, transparent: true, blending: THREE.AdditiveBlending,
-            scaleByViewport:true
-        });
-        sprite = new THREE.Sprite( spriteMaterial );
-        sprite.scale.set(9*sunSize, 9*sunSize,9*sunSize);
-            scene.add(sprite);
 
     //mercury Model
     let mercury = new THREE.SphereGeometry(mercurySize,32,32);
@@ -436,7 +406,7 @@ function init(event) {
     let pointsSaturn = [];
     for(var theta = 0;  theta < 2*Math.PI;  theta+=Math.PI/365){
 		pointsSaturn.push(new THREE.Vector3(1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(saturnA*saturnA)+ Math.sin(theta)*Math.sin(theta)/(saturnB*saturnB))) * Math.cos(theta),
-			Math.sin(saturnObliquity+theta),
+			Math.sin(saturnbliquity+theta),
 			1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(saturnA*saturnA)+ Math.sin(theta)*Math.sin(theta)/(saturnB*saturnB))) * Math.sin(theta)));  
 	}
     var saturnrbit = new THREE.BufferGeometry().setFromPoints(pointsSaturn);
@@ -488,106 +458,6 @@ function init(event) {
     scene.add(neptuneMesh);
     scene.add(orbits);
 
-    // Set planet data
-    planets_info = {
-        Mercury: {
-            name: 'Mercury',
-            radius: '2,439.7 km',
-            temperature: '-173C to +437C',
-            rotation_time: '1,408 hours',
-            translation: '172.404 km/h',
-            rotacion: '10.83 km/h',
-            translation_time: '88 days',
-            distance: '57.9 million km',
-            model: mercuryMesh,
-            size : mercurySize
-        },
-        Venus: {
-            name: 'Venus',
-            radius: '6,051.8 km',
-            temperature: '+380C to +497C',
-            rotation_time: '5,832 hours',
-            translation: '126.108 km/h',
-            rotacion: '6.52 km/h',
-            translation_time: '225 days',
-            distance: '108.2 million km',
-            model: venusMesh,
-            size: venusSize
-        },
-        Earth: {
-            name: 'Earth',
-            radius: '6,371 km',
-            temperature: '-89C to +57C',
-            rotation_time: '24 hours',
-            translation: '107.244 km/h',
-            rotacion: '1674 km/h',
-            translation_time: '365 days',
-            distance: '149.6 million km',
-            model: earthMesh,
-            size: earthSize
-        },
-        Mars: {
-            name: 'Mars',
-            radius: '3,389.5 km',
-            temperature: '-133C to +35C',
-            rotation_time: '25 hours',
-            translation: '86.868 km/h',
-            rotacion: '866 km/h',
-            translation_time: '687 days',
-            distance: '227.9 million km',
-            model: marsMesh,
-            size: marsSize
-        },
-        Jupiter: {
-            name: 'Jupiter',
-            radius: '69,911 km',
-            temperature: '-150C to -93C',
-            rotation_time: '10 hours',
-            translation: '47.016 km/h',
-            rotacion: '45.583 km/h',
-            translation_time: '12 years',
-            distance: '778.3 million km',
-            model: jupiterMesh,
-            size: jupiterSize
-        },
-        Saturn: {
-            name: 'Saturn',
-            radius: '58,232 km',
-            temperature: '-143C to -133C',
-            rotation_time: '11 hours',
-            translation: '34.705 km/h',
-            rotacion: '36.840 km/h',
-            translation_time: '29 years',
-            distance: '1,427.0 million km',
-            model: saturnMesh,
-            size: saturnSize
-        },
-        Uranus: {
-            name: 'Uranus',
-            radius: '25,362 km',
-            temperature: '-200C to -195C',
-            rotation_time: '17 hours',
-            translation: '24.516 km/h',
-            rotacion: '14.794 km/h',
-            translation_time: '84 years',
-            distance: '2,871.0 million km',
-            model: uranusMesh,
-            size: uranusSize
-        },
-        Neptune: {
-            name: 'Neptune',
-            radius: '24,622 km',
-            temperature: '-203C to -197C',
-            rotation_time: '16 hours',
-            translation: '19.548 km/h',
-            rotacion: '9.719 km/h',
-            translation_time: '165 years',
-            distance: '2,871.0 million km',
-            model: neptuneMesh,
-            size: neptuneSize
-        }
-    }
-
     // SETUP STATS
     stats = new Stats();
     stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -597,6 +467,10 @@ function init(event) {
     firstTime = Date.now();
     timeScale = 0.0001;
     var angle = 0;
+
+    
+
+
 
     renderLoop();
 }
@@ -627,57 +501,9 @@ function updateScene() {
         
         translatePlanets();
         rotatePlanets();
-        translatePlanetsInfo();
     }
-}
+    
 
-function createPlanetsInfo(){
-    for(const [planet, planet_info] of Object.entries(planets_info)){
-        let planet_info_sprite = new THREE.TextSprite({
-            text: getDisplayText(planet_info),
-            fontFamily: 'Arial, Helvetica, sans-serif',
-            backgroundColor: 'rgba(255, 255, 255, .2)',
-            fontSize: planet_info.size>2? 1.5: .15,
-            alignment: 'left',
-            color: '#ffbbff',
-        });
-        planet_info_sprite.position.x = planet_info.model.position.x;
-        planet_info_sprite.position.y = planet_info.size + planet_info.model.position.y + (planet_info.size<2? 1: 10);
-        planet_info['info_sprite'] = planet_info_sprite;
-        scene.add(planet_info_sprite);
-    }
-    show_planet_info = true;
-}
-
-function translatePlanetsInfo(){
-    if(!show_planet_info){
-        return;
-    }
-    for(const [planet, planet_info] of Object.entries(planets_info)){
-        let planet_info_sprite = planet_info['info_sprite'];
-        let planet_size = planet_info['size'];
-        let planet_model = planet_info['model'];
-        let planet_name = planet_info['name'];
-
-        if(planet_focused && params.lookAt===planet_name){
-            planet_info_sprite.position.x = 100;
-            planet_info_sprite.position.y = 100;
-            planet_info_sprite.position.z = 100;
-            return;
-        }
-
-        planet_info_sprite.position.x = planet_model.position.x;
-        planet_info_sprite.position.y = planet_size + planet_model.position.y + (planet_size<2? 2: 10);
-        planet_info_sprite.position.z =  planet_model.position.z;
-    }
-}
-
-function getDisplayText(planet){
-    let txt = `\t${planet.name}\n
-    Translation velocity: ${planet.translation}\n
-    Rotation velocity: ${planet.rotacion}\n
-    Translation time: ${planet.translation_time}`;
-    return txt;
 }
 
 function scalePlanets(){
@@ -821,22 +647,7 @@ function setupGUI(){
         scale: false,
         planetFormation: false,
         simulationSpeed: 1,
-        mercuryObliquity: mercuryObliquity,
-        mercuryMultiplier: 1,  
-        venusMultiplier: 1,
-        venusObliquity: venusObliquity,   
-        earthMultiplier: 1,
-        earthObliquity: earthObliquity,
-        marsMultiplier: 1,
-        marsObliquity: marsObliquity,
-        jupiterMultiplier: 1,
-        jupiterObliquity: jupiterObliquity,
-        saturnMultiplier: 1,
-        saturnObliquity: saturnObliquity,
-        uranusMultiplier: 1,
-        uranusObliquity: uranusObliquity,
-        neptuneMultiplier: 1,
-        neptuneObliquity: neptuneObliquity,  
+         
      };
 
      gui.add(params, "simulationSpeed", 0, 100, 1).name("Simulation Speed").listen().onChange(function(value) {   
@@ -855,284 +666,13 @@ function setupGUI(){
 
 
     gui.add(params, "lookAt", ["None","Mercury", "Venus", "Earth", "Mars", "Jupiter","Saturn","Uranus","Neptune"]).name("Focus on planet").onChange(function(value){
-    	if(value==='None'){
-            hide_display_message();
-        }else{
-            show_display_message(value);
-        }
+    	
     });
     oldScale=false;
     newScale = false;
 
-    //Mercury folder
-    let mercuryFolder = gui.addFolder("Mercury Settings");
-    mercuryFolder.add(params, "mercuryObliquity", 0, 7, .1).name("Obliquity").onChange(function(value){
-        mercuryObliquity = params.mercuryObliquity;
-        drawMercuryOrbit();
-    })
-    mercuryFolder.add(params, "mercuryMultiplier", .1, 10, .1).name("Radius").onChange(function(value){
-        mercuryA = mercuryMayorAxis;
-        mercuryE =0.205;
-        mercuryB = mercuryA*Math.sqrt(1-mercuryE*mercuryE);
-        mercuryTheta = 0;
-        mercuryA = mercuryA*params.mercuryMultiplier;
-        mercuryB = mercuryB*params.mercuryMultiplier;
-        mercuryTheta = mercuryTheta*params.mercuryMultiplier;
-        drawMercuryOrbit();
-    })
-    
-    //Venus folder
-    let venusFolder = gui.addFolder("Venus Settings");
-    venusFolder.add(params, "venusObliquity", 0, 7, .1).name("Obliquity").onChange(function(value){
-        venusObliquity = params.venusObliquity;
-        drawVenusOrbit();
-    })
-    venusFolder.add(params, "venusMultiplier", .1, 10, .1).name("Radius").onChange(function(value){
-        venusA = venusMayorAxis;
-        venusE = 0.0067;
-        venusB = venusA*Math.sqrt(1-venusE*venusE);
-        venusTheta = 0;
-        venusA = venusA*params.venusMultiplier;
-        venusB = venusB*params.venusMultiplier;
-        venusTheta = venusTheta*params.venusMultiplier;
-        drawVenusOrbit();
-    })
-
-    //Earth folder
-    let earthFolder = gui.addFolder("Earth Settings");
-    earthFolder.add(params, "earthObliquity", 0, 7, .1).name("Obliquity").onChange(function(value){
-        earthObliquity = params.earthObliquity;
-        drawEarthOrbit();
-    })
-    earthFolder.add(params, "earthMultiplier", .1, 10, .1).name("Radius").onChange(function(value){
-        earthA = earthMayorAxis;
-        earthE = 0.0167;
-        earthB = earthA*Math.sqrt(1-earthE*earthE);
-        earthTheta = 0;
-        earthA = earthA*params.earthMultiplier;
-        earthB = earthB*params.earthMultiplier;
-        earthTheta = earthTheta*params.earthMultiplier;
-        drawEarthOrbit();
-    })
-
-    //Mars folder
-    let marsFolder = gui.addFolder("Mars Settings");
-    marsFolder.add(params, "marsObliquity", 0, 7, .1).name("Obliquity").onChange(function(value){
-        marsObliquity = params.marsObliquity;
-        drawMarsOrbit();
-    })
-    marsFolder.add(params, "marsMultiplier", .1, 10, .1).name("Radius").onChange(function(value){
-        marsA = marsMayorAxis;
-        marsE = 0.093;
-        marsB = marsA*Math.sqrt(1-marsE*marsE);
-        marsTheta = 0;
-        marsA = marsA*params.marsMultiplier;
-        marsB = marsB*params.marsMultiplier;
-        marsTheta = marsTheta*params.marsMultiplier;
-        drawMarsOrbit();
-    })
-
-    //Jupiter folder
-    let jupiterFolder = gui.addFolder("Jupiter Settings");
-    jupiterFolder.add(params, "jupiterObliquity", 0, 7, .1).name("Obliquity").onChange(function(value){
-        jupiterObliquity = params.jupiterObliquity;
-        drawJupiterOrbit();
-    })
-    jupiterFolder.add(params, "jupiterMultiplier", .01, 10, .01).name("Radius").onChange(function(value){
-        jupiterA = jupiterMayorAxis;
-        jupiterE = 0.0483;
-        jupiterB = jupiterA*Math.sqrt(1-jupiterE*jupiterE);
-        jupiterTheta = 0;
-        jupiterA = jupiterA*params.jupiterMultiplier;
-        jupiterB = jupiterB*params.jupiterMultiplier;
-        jupiterTheta = jupiterTheta*params.jupiterMultiplier;
-        drawJupiterOrbit();
-    })
-
-    //Saturn folder
-    let saturnFolder = gui.addFolder("Saturn Settings");
-    saturnFolder.add(params, "saturnObliquity", 0, 7, .1).name("Obliquity").onChange(function(value){
-        saturnObliquity = params.saturnObliquity;
-        drawSaturnOrbit();
-    })
-    saturnFolder.add(params, "saturnMultiplier", .01, 10, .01).name("Radius").onChange(function(value){
-        saturnA =saturnMayorAxis;
-        saturnE = 0.0541;
-        saturnB = saturnA*Math.sqrt(1-saturnE*saturnE);
-        saturnTheta = 0;
-        saturnA = saturnA*params.saturnMultiplier;
-        saturnB = saturnB*params.saturnMultiplier;
-        saturnTheta = saturnTheta*params.saturnMultiplier;
-        drawSaturnOrbit();
-    })
-
-    //Uranus folder
-    let uranusFolder = gui.addFolder("Uranus Settings");
-    uranusFolder.add(params, "uranusObliquity", 0, 7, .1).name("Obliquity").onChange(function(value){
-        uranusObliquity = params.uranusObliquity;
-        drawUranusOrbit();
-    })
-    uranusFolder.add(params, "uranusMultiplier", .01, 10, .01).name("Radius").onChange(function(value){
-        uranusA = uranusMayorAxis;
-        uranusE = 0.0471;
-        uranusB = uranusA*Math.sqrt(1-uranusE*uranusE);
-        uranusTheta = 0;
-        uranusA = uranusA*params.uranusMultiplier;
-        uranusB = uranusB*params.uranusMultiplier;
-        uranusTheta = uranusTheta*params.uranusMultiplier;
-        drawUranusOrbit();
-    })
-
-    //Neptune folder
-    let neptuneFolder = gui.addFolder("Neptune Settings");
-    neptuneFolder.add(params, "neptuneObliquity", 0, 7, .1).name("Obliquity").onChange(function(value){
-        neptuneObliquity = params.neptuneObliquity;
-        drawNeptuneOrbit();
-    })
-    neptuneFolder.add(params, "neptuneMultiplier", .01, 10, .01).name("Radius").onChange(function(value){
-        neptuneA = neptuneMayorAxis;
-        neptuneE = 0.0085;
-        neptuneB = neptuneA*Math.sqrt(1-neptuneE*neptuneE);
-        neptuneTheta = 0;
-        neptuneA = neptuneA*params.neptuneMultiplier;
-        neptuneB = neptuneB*params.neptuneMultiplier;
-        neptuneTheta = neptuneTheta*params.neptuneMultiplier;
-        drawNeptuneOrbit();
-    })
-
     gui.close();
 }
-
-<<<<<<< HEAD
-function drawMercuryOrbit(){
-    var mercurymat = new THREE.LineBasicMaterial({color: 0xBEBA99,}); 
-    let pointsMercury = [];
-    for(var theta = 0;  theta <= 2*Math.PI;  theta+=Math.PI/365){
-		pointsMercury.push(new THREE.Vector3(1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(mercuryA*mercuryA)+ Math.sin(theta)*Math.sin(theta)/(mercuryB*mercuryB))) * Math.cos(theta),
-			Math.sin(mercuryObliquity+theta),		
-			1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(mercuryA*mercuryA)+ Math.sin(theta)*Math.sin(theta)/(mercuryB*mercuryB))) * Math.sin(theta)));  
-	}
-    var mercuryOrbit = new THREE.BufferGeometry().setFromPoints(pointsMercury);
-    orbits.children[0]=(new THREE.Line(mercuryOrbit,mercurymat));
-}
-
-function drawVenusOrbit(){
-    var venusmat = new THREE.LineBasicMaterial({color: 0xFFF300,}); 
-    let pointsVenus = [];
-    for(var theta = 0;  theta <= 2*Math.PI;  theta+=Math.PI /365){
-		pointsVenus.push(new THREE.Vector3(1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(venusA*venusA)+ Math.sin(theta)*Math.sin(theta)/(venusB*venusB))) * Math.cos(theta),
-			Math.sin(venusObliquity+theta),		
-			1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(venusA*venusA)+ Math.sin(theta)*Math.sin(theta)/(venusB*venusB))) * Math.sin(theta)));  
-	}
-    var venusOrbit = new THREE.BufferGeometry().setFromPoints(pointsVenus);
-    orbits.children[1]=(new THREE.Line(venusOrbit,venusmat));
-}
-
-function drawEarthOrbit(){
-    var earthmat = new THREE.LineBasicMaterial({color: 0xFFF300,}); 
-    let pointsEarth = [];
-    for(var theta = 0;  theta <= 2*Math.PI;  theta+=Math.PI /365){
-		pointsEarth.push(new THREE.Vector3(1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(earthA*earthA)+ Math.sin(theta)*Math.sin(theta)/(earthB*earthB))) * Math.cos(theta),
-			Math.sin(earthObliquity+theta),		
-			1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(earthA*earthA)+ Math.sin(theta)*Math.sin(theta)/(earthB*earthB))) * Math.sin(theta)));  
-	}
-    var earthOrbit = new THREE.BufferGeometry().setFromPoints(pointsEarth);
-    orbits.children[2]=(new THREE.Line(earthOrbit,earthmat));
-}
-
-function drawMarsOrbit(){
-    var marsmat = new THREE.LineBasicMaterial({color: 0xFFF300,}); 
-    let pointsmars = [];
-    for(var theta = 0;  theta <= 2*Math.PI;  theta+=Math.PI /365){
-		pointsmars.push(new THREE.Vector3(1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(marsA*marsA)+ Math.sin(theta)*Math.sin(theta)/(marsB*marsB))) * Math.cos(theta),
-			Math.sin(marsObliquity+theta),		
-			1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(marsA*marsA)+ Math.sin(theta)*Math.sin(theta)/(marsB*marsB))) * Math.sin(theta)));  
-	}
-    var marsOrbit = new THREE.BufferGeometry().setFromPoints(pointsmars);
-    orbits.children[3]=(new THREE.Line(marsOrbit,marsmat));
-}
-
-function drawJupiterOrbit(){
-    var jupitermat = new THREE.LineBasicMaterial({color: 0xFFF300,}); 
-    let pointsjupiter = [];
-    for(var theta = 0;  theta <= 2*Math.PI;  theta+=Math.PI /365){
-		pointsjupiter.push(new THREE.Vector3(1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(jupiterA*jupiterA)+ Math.sin(theta)*Math.sin(theta)/(jupiterB*jupiterB))) * Math.cos(theta),
-			Math.sin(jupiterObliquity+theta),		
-			1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(jupiterA*jupiterA)+ Math.sin(theta)*Math.sin(theta)/(jupiterB*jupiterB))) * Math.sin(theta)));  
-	}
-    var jupiterOrbit = new THREE.BufferGeometry().setFromPoints(pointsjupiter);
-    orbits.children[4]=(new THREE.Line(jupiterOrbit,jupitermat));
-}
-
-function drawSaturnOrbit(){
-    var saturnmat = new THREE.LineBasicMaterial({color: 0xFFF300,}); 
-    let pointssaturn = [];
-    for(var theta = 0;  theta <= 2*Math.PI;  theta+=Math.PI /365){
-		pointssaturn.push(new THREE.Vector3(1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(saturnA*saturnA)+ Math.sin(theta)*Math.sin(theta)/(saturnB*saturnB))) * Math.cos(theta),
-			Math.sin(saturnObliquity+theta),		
-			1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(saturnA*saturnA)+ Math.sin(theta)*Math.sin(theta)/(saturnB*saturnB))) * Math.sin(theta)));  
-	}
-    var saturnOrbit = new THREE.BufferGeometry().setFromPoints(pointssaturn);
-    orbits.children[5]=(new THREE.Line(saturnOrbit,saturnmat));
-}
-
-function drawUranusOrbit(){
-    var uranusmat = new THREE.LineBasicMaterial({color: 0xFFF300,}); 
-    let pointsuranus = [];
-    for(var theta = 0;  theta <= 2*Math.PI;  theta+=Math.PI /365){
-		pointsuranus.push(new THREE.Vector3(1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(uranusA*uranusA)+ Math.sin(theta)*Math.sin(theta)/(uranusB*uranusB))) * Math.cos(theta),
-			Math.sin(uranusObliquity+theta),		
-			1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(uranusA*uranusA)+ Math.sin(theta)*Math.sin(theta)/(uranusB*uranusB))) * Math.sin(theta)));  
-	}
-    var uranusOrbit = new THREE.BufferGeometry().setFromPoints(pointsuranus);
-    orbits.children[6]=(new THREE.Line(uranusOrbit,uranusmat));
-}
-
-function drawNeptuneOrbit(){
-    var neptunemat = new THREE.LineBasicMaterial({color: 0xFFF300,}); 
-    let pointsneptune = [];
-    for(var theta = 0;  theta <= 2*Math.PI;  theta+=Math.PI /365){
-		pointsneptune.push(new THREE.Vector3(1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(neptuneA*neptuneA)+ Math.sin(theta)*Math.sin(theta)/(neptuneB*neptuneB))) * Math.cos(theta),
-			Math.sin(neptuneObliquity+theta),		
-			1 /(Math.sqrt(Math.cos(theta)*Math.cos(theta)/(neptuneA*neptuneA)+ Math.sin(theta)*Math.sin(theta)/(neptuneB*neptuneB))) * Math.sin(theta)));  
-	}
-    var neptuneOrbit = new THREE.BufferGeometry().setFromPoints(pointsneptune);
-    orbits.children[7]=(new THREE.Line(neptuneOrbit,neptunemat));
-}
-=======
-function hide_display_message(){
-    planet_focused = false;
-    var all = document.getElementsByClassName('dialog-info');
-    for (var i = 0; i < all.length; i++) {
-        all[i].style.display = 'none';
-    }
-}
-
-function show_display_message(planet_name){
-    planet_focused = true;
-    let planet = planets_info[planet_name];
-
-    var planet_name = document.getElementById('planet');
-    var planet_size = document.getElementById('planet-size');
-    var traslation_time = document.getElementById('traslation-time');
-    var rotation_time = document.getElementById('rotation-time');
-    var planet_temp = document.getElementById('planet-temp');
-    var planet_distance = document.getElementById('planet-distance');
-
-    planet_name.innerHTML = planet['name']
-    planet_size.innerHTML = planet['radius'];
-    traslation_time.innerHTML = planet['translation_time'];
-    rotation_time.innerHTML = planet['rotation_time'];
-    planet_temp.innerHTML = planet['temperature'];
-    planet_distance.innerHTML = planet['distance'];
-
-    var dialogs = document.getElementsByClassName('dialog-info');
-    for (var i = 0; i < dialogs.length; i++) {
-        dialogs[i].style.display = 'flex';
-    }
-}
-
->>>>>>> 3222ab2030c2c7bc31946576191da1922296e7fa
 
 function planetFormation(){
     params.scale = true;
@@ -1194,7 +734,7 @@ function translatePlanets(){
 
     saturnMesh.position.x =1 /(Math.sqrt(Math.cos(saturnTheta)*Math.cos(saturnTheta)/(saturnA*saturnA)+ Math.sin(saturnTheta)*Math.sin(saturnTheta)/(saturnB*saturnB))) * Math.cos(saturnTheta);
     saturnMesh.position.z =  1 /(Math.sqrt(Math.cos(saturnTheta)*Math.cos(saturnTheta)/(saturnA*saturnA)+ Math.sin(saturnTheta)*Math.sin(saturnTheta)/(saturnB*saturnB))) * Math.sin(saturnTheta);
-    saturnMesh.position.y  = Math.sin(saturnObliquity+saturnTheta);// Math.cos( vz )*c;
+    saturnMesh.position.y  = Math.sin(saturnbliquity+saturnTheta);// Math.cos( vz )*c;
 
     ringMesh.position.x =saturnMesh.position.x;
     ringMesh.position.y =saturnMesh.position.y;
@@ -1226,7 +766,6 @@ function getCenterPoint(mesh) {
 //document.addEventListener("DOMContentLoaded", init);
 setupGUI();
 init();
-createPlanetsInfo();
 
 window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;

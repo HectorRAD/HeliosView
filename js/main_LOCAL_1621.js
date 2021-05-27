@@ -1,4 +1,4 @@
-// import * as THREE from "/build/three.module.js";
+import * as THREE from "/build/three.module.js";
 import Stats from "/js/jsm/libs/stats.module.js";
 import {OrbitControls} from "/js/jsm/controls/OrbitControls.js";
 import * as dat from "/js/jsm/libs/dat.gui.module.js";
@@ -158,18 +158,8 @@ let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui,
    var    uranusOrbitalPeriod = 84.016 ;
    var  neptuneOrbitalPeriod = 64.7913;
 
-<<<<<<< HEAD
    //Second orbit
    var mercurySecondOrbit;
-=======
-    // Planets info message data
-
-    var show_planet_info = false;
-    var selected_planet =  null;
-    var selected_planet_info = null;
-    let planets_info = {};
-    var planet_focused = false;
->>>>>>> 3222ab2030c2c7bc31946576191da1922296e7fa
 
 function init(event) {
 
@@ -488,106 +478,6 @@ function init(event) {
     scene.add(neptuneMesh);
     scene.add(orbits);
 
-    // Set planet data
-    planets_info = {
-        Mercury: {
-            name: 'Mercury',
-            radius: '2,439.7 km',
-            temperature: '-173C to +437C',
-            rotation_time: '1,408 hours',
-            translation: '172.404 km/h',
-            rotacion: '10.83 km/h',
-            translation_time: '88 days',
-            distance: '57.9 million km',
-            model: mercuryMesh,
-            size : mercurySize
-        },
-        Venus: {
-            name: 'Venus',
-            radius: '6,051.8 km',
-            temperature: '+380C to +497C',
-            rotation_time: '5,832 hours',
-            translation: '126.108 km/h',
-            rotacion: '6.52 km/h',
-            translation_time: '225 days',
-            distance: '108.2 million km',
-            model: venusMesh,
-            size: venusSize
-        },
-        Earth: {
-            name: 'Earth',
-            radius: '6,371 km',
-            temperature: '-89C to +57C',
-            rotation_time: '24 hours',
-            translation: '107.244 km/h',
-            rotacion: '1674 km/h',
-            translation_time: '365 days',
-            distance: '149.6 million km',
-            model: earthMesh,
-            size: earthSize
-        },
-        Mars: {
-            name: 'Mars',
-            radius: '3,389.5 km',
-            temperature: '-133C to +35C',
-            rotation_time: '25 hours',
-            translation: '86.868 km/h',
-            rotacion: '866 km/h',
-            translation_time: '687 days',
-            distance: '227.9 million km',
-            model: marsMesh,
-            size: marsSize
-        },
-        Jupiter: {
-            name: 'Jupiter',
-            radius: '69,911 km',
-            temperature: '-150C to -93C',
-            rotation_time: '10 hours',
-            translation: '47.016 km/h',
-            rotacion: '45.583 km/h',
-            translation_time: '12 years',
-            distance: '778.3 million km',
-            model: jupiterMesh,
-            size: jupiterSize
-        },
-        Saturn: {
-            name: 'Saturn',
-            radius: '58,232 km',
-            temperature: '-143C to -133C',
-            rotation_time: '11 hours',
-            translation: '34.705 km/h',
-            rotacion: '36.840 km/h',
-            translation_time: '29 years',
-            distance: '1,427.0 million km',
-            model: saturnMesh,
-            size: saturnSize
-        },
-        Uranus: {
-            name: 'Uranus',
-            radius: '25,362 km',
-            temperature: '-200C to -195C',
-            rotation_time: '17 hours',
-            translation: '24.516 km/h',
-            rotacion: '14.794 km/h',
-            translation_time: '84 years',
-            distance: '2,871.0 million km',
-            model: uranusMesh,
-            size: uranusSize
-        },
-        Neptune: {
-            name: 'Neptune',
-            radius: '24,622 km',
-            temperature: '-203C to -197C',
-            rotation_time: '16 hours',
-            translation: '19.548 km/h',
-            rotacion: '9.719 km/h',
-            translation_time: '165 years',
-            distance: '2,871.0 million km',
-            model: neptuneMesh,
-            size: neptuneSize
-        }
-    }
-
     // SETUP STATS
     stats = new Stats();
     stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -597,6 +487,10 @@ function init(event) {
     firstTime = Date.now();
     timeScale = 0.0001;
     var angle = 0;
+
+    
+
+
 
     renderLoop();
 }
@@ -627,57 +521,9 @@ function updateScene() {
         
         translatePlanets();
         rotatePlanets();
-        translatePlanetsInfo();
     }
-}
+    
 
-function createPlanetsInfo(){
-    for(const [planet, planet_info] of Object.entries(planets_info)){
-        let planet_info_sprite = new THREE.TextSprite({
-            text: getDisplayText(planet_info),
-            fontFamily: 'Arial, Helvetica, sans-serif',
-            backgroundColor: 'rgba(255, 255, 255, .2)',
-            fontSize: planet_info.size>2? 1.5: .15,
-            alignment: 'left',
-            color: '#ffbbff',
-        });
-        planet_info_sprite.position.x = planet_info.model.position.x;
-        planet_info_sprite.position.y = planet_info.size + planet_info.model.position.y + (planet_info.size<2? 1: 10);
-        planet_info['info_sprite'] = planet_info_sprite;
-        scene.add(planet_info_sprite);
-    }
-    show_planet_info = true;
-}
-
-function translatePlanetsInfo(){
-    if(!show_planet_info){
-        return;
-    }
-    for(const [planet, planet_info] of Object.entries(planets_info)){
-        let planet_info_sprite = planet_info['info_sprite'];
-        let planet_size = planet_info['size'];
-        let planet_model = planet_info['model'];
-        let planet_name = planet_info['name'];
-
-        if(planet_focused && params.lookAt===planet_name){
-            planet_info_sprite.position.x = 100;
-            planet_info_sprite.position.y = 100;
-            planet_info_sprite.position.z = 100;
-            return;
-        }
-
-        planet_info_sprite.position.x = planet_model.position.x;
-        planet_info_sprite.position.y = planet_size + planet_model.position.y + (planet_size<2? 2: 10);
-        planet_info_sprite.position.z =  planet_model.position.z;
-    }
-}
-
-function getDisplayText(planet){
-    let txt = `\t${planet.name}\n
-    Translation velocity: ${planet.translation}\n
-    Rotation velocity: ${planet.rotacion}\n
-    Translation time: ${planet.translation_time}`;
-    return txt;
 }
 
 function scalePlanets(){
@@ -855,11 +701,7 @@ function setupGUI(){
 
 
     gui.add(params, "lookAt", ["None","Mercury", "Venus", "Earth", "Mars", "Jupiter","Saturn","Uranus","Neptune"]).name("Focus on planet").onChange(function(value){
-    	if(value==='None'){
-            hide_display_message();
-        }else{
-            show_display_message(value);
-        }
+    	
     });
     oldScale=false;
     newScale = false;
@@ -1003,7 +845,6 @@ function setupGUI(){
     gui.close();
 }
 
-<<<<<<< HEAD
 function drawMercuryOrbit(){
     var mercurymat = new THREE.LineBasicMaterial({color: 0xBEBA99,}); 
     let pointsMercury = [];
@@ -1099,40 +940,6 @@ function drawNeptuneOrbit(){
     var neptuneOrbit = new THREE.BufferGeometry().setFromPoints(pointsneptune);
     orbits.children[7]=(new THREE.Line(neptuneOrbit,neptunemat));
 }
-=======
-function hide_display_message(){
-    planet_focused = false;
-    var all = document.getElementsByClassName('dialog-info');
-    for (var i = 0; i < all.length; i++) {
-        all[i].style.display = 'none';
-    }
-}
-
-function show_display_message(planet_name){
-    planet_focused = true;
-    let planet = planets_info[planet_name];
-
-    var planet_name = document.getElementById('planet');
-    var planet_size = document.getElementById('planet-size');
-    var traslation_time = document.getElementById('traslation-time');
-    var rotation_time = document.getElementById('rotation-time');
-    var planet_temp = document.getElementById('planet-temp');
-    var planet_distance = document.getElementById('planet-distance');
-
-    planet_name.innerHTML = planet['name']
-    planet_size.innerHTML = planet['radius'];
-    traslation_time.innerHTML = planet['translation_time'];
-    rotation_time.innerHTML = planet['rotation_time'];
-    planet_temp.innerHTML = planet['temperature'];
-    planet_distance.innerHTML = planet['distance'];
-
-    var dialogs = document.getElementsByClassName('dialog-info');
-    for (var i = 0; i < dialogs.length; i++) {
-        dialogs[i].style.display = 'flex';
-    }
-}
-
->>>>>>> 3222ab2030c2c7bc31946576191da1922296e7fa
 
 function planetFormation(){
     params.scale = true;
@@ -1226,7 +1033,6 @@ function getCenterPoint(mesh) {
 //document.addEventListener("DOMContentLoaded", init);
 setupGUI();
 init();
-createPlanetsInfo();
 
 window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
