@@ -158,10 +158,9 @@ let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui,
    var    uranusOrbitalPeriod = 84.016 ;
    var  neptuneOrbitalPeriod = 64.7913;
 
-<<<<<<< HEAD
+
    //Second orbit
    var mercurySecondOrbit;
-=======
     // Planets info message data
 
     var show_planet_info = false;
@@ -169,7 +168,7 @@ let renderer, scene, camera, skyboxMesh, stats, cameraControls, gui,
     var selected_planet_info = null;
     let planets_info = {};
     var planet_focused = false;
->>>>>>> 3222ab2030c2c7bc31946576191da1922296e7fa
+
 
 function init(event) {
 
@@ -1003,7 +1002,6 @@ function setupGUI(){
     gui.close();
 }
 
-<<<<<<< HEAD
 function drawMercuryOrbit(){
     var mercurymat = new THREE.LineBasicMaterial({color: 0xBEBA99,}); 
     let pointsMercury = [];
@@ -1099,7 +1097,7 @@ function drawNeptuneOrbit(){
     var neptuneOrbit = new THREE.BufferGeometry().setFromPoints(pointsneptune);
     orbits.children[7]=(new THREE.Line(neptuneOrbit,neptunemat));
 }
-=======
+
 function hide_display_message(){
     planet_focused = false;
     var all = document.getElementsByClassName('dialog-info');
@@ -1132,7 +1130,6 @@ function show_display_message(planet_name){
     }
 }
 
->>>>>>> 3222ab2030c2c7bc31946576191da1922296e7fa
 
 function planetFormation(){
     params.scale = true;
